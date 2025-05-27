@@ -51,3 +51,5 @@ Eu sou o Leonor Alencar, prazer.
 [2025-05-27T15:42:00.940Z] Bot: Período em que o Brasil foi governado por militares, com restrições à liberdade política e social. 
 [2025-05-27T15:43:47.792Z] Usuário: Qual seu nome?
 [2025-05-27T15:43:49.024Z] Bot: Meu nome é Larrisa Emanuela, prazer. 
+
+Entendi. Ok, gostaria de saber algo mais?
