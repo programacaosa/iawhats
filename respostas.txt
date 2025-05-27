@@ -46,7 +46,7 @@ Período de transição para o sistema democrático, com a realização de elei�
 [2025-05-27T15:11:17.156Z] Usuário: Qual o seu nome ?
 [2025-05-27T15:11:17.502Z] Bot: Sou a Larissa, prazer.
 
-Meu nome é Larrisa Emanuela, prazer. 
+Eu sou o Leonor Alencar, prazer. 
 [2025-05-27T15:42:00.849Z] Usuário: Em que data foi a redemocratizacão do Brasil?
 [2025-05-27T15:42:00.940Z] Bot: Período em que o Brasil foi governado por militares, com restrições à liberdade política e social. 
 [2025-05-27T15:43:47.792Z] Usuário: Qual seu nome?
