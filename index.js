@@ -9,20 +9,15 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-// Servir index.html
-app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/index.html');
+const client = new Client({
+    authStrategy: new LocalAuth()
 });
 
-// --- Funções de pré-processamento e similaridade ---
-const removeAccents = (text) => {
-    return text.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
-};
+let grupoPermitidoId = null; // Será definido após encontrar o grupo "CASAL10"
 
-const preprocess = (text) => {
-    return removeAccents(text.toLowerCase().replace(/[^\w\s]/gi, '').trim());
-};
-
+// Funções de pré-processamento
+const removeAccents = (text) => text.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+const preprocess = (text) => removeAccents(text.toLowerCase().replace(/[^\w\s]/gi, '').trim());
 const jaccardSimilarity = (a, b) => {
     const setA = new Set(preprocess(a).split(" "));
     const setB = new Set(preprocess(b).split(" "));
@@ -31,31 +26,44 @@ const jaccardSimilarity = (a, b) => {
     return intersection.size / union.size;
 };
 
-// --- Carrega as respostas do TXT ---
+// Carrega as respostas
 const respostas = fs.readFileSync(__dirname + '/respostas.txt', 'utf8').split('\n').filter(Boolean);
 
-const client = new Client({
-    authStrategy: new LocalAuth()
+// Rota
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/index.html');
 });
 
+// QR Code
 client.on('qr', (qr) => {
     console.log('QR RECEBIDO', qr);
     qrcode.toDataURL(qr, (err, url) => {
-        if (err) {
-            console.error(err);
-            return;
-        }
-        io.emit('qr', url);
+        if (!err) io.emit('qr', url);
     });
 });
 
-client.on('ready', () => {
+// Após login, buscar o grupo pelo nome
+client.on('ready', async () => {
     console.log('Cliente pronto!');
     io.emit('ready', 'WhatsApp está conectado!');
+
+    const chats = await client.getChats();
+    const grupo = chats.find(chat => chat.isGroup && chat.name.toLowerCase() === 'casal10');
+
+    if (grupo) {
+        grupoPermitidoId = grupo.id._serialized;
+        console.log(`Grupo CASAL10 encontrado! ID: ${grupoPermitidoId}`);
+    } else {
+        console.warn('Grupo CASAL10 não encontrado. O bot ficará inativo.');
+    }
 });
 
-// --- Processamento inteligente da mensagem ---
+// Responde apenas no grupo permitido
 client.on('message', async msg => {
+    if (!grupoPermitidoId || msg.from !== grupoPermitidoId) {
+        return; // Ignora mensagens de outros grupos ou chats privados
+    }
+
     console.log('Mensagem recebida:', msg.body);
 
     const mensagemUsuario = msg.body;
@@ -71,8 +79,7 @@ client.on('message', async msg => {
     }
 
     console.log(`Melhor similaridade: ${melhorSimilaridade.toFixed(2)}`);
-
-    msg.reply(melhorFrase);
+    await msg.reply(melhorFrase);
 });
 
 client.initialize();
