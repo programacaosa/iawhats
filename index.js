@@ -66,7 +66,7 @@ app.get('/', (req, res) => {
       <head><title>QR Code WhatsApp</title></head>
       <body>
         <h1>📱 Escaneie o QR Code para iniciar o bot</h1>
-        ${qrImageData ? `<img src="${qrImageData}" alt="QR Code">` : '<p>Aguardando geração do QR Code. Isso pode levar alguns segundos aguarde...</p>'}
+        ${qrImageData ? `<img src="${qrImageData}" alt="QR Code">` : '<p>Aguardando geração do QR Code. Caso demore por favor, atualize a tela...</p>'}
       </body>
     </html>
   `);
@@ -75,3 +75,4 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
   console.log(`🌐 Acesse http://localhost:${port} para ver o QR Code`);
 });
+
